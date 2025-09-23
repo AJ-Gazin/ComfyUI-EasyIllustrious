@@ -31,11 +31,20 @@ Illustrious Prompt Suite and resources.
 """
 # Global resolutions dictionary - primary resolution selector
 RESOLUTIONS: Dict[str, str] = {
+    "Portrait | SDXL Well Known (5:12) - 640x1536": "640x1536",
+    "Portrait | SDXL Well Known (4:7) - 768x1344": "768x1344",
+    "Portrait | SDXL Well Known (13:19) - 832x1216": "832x1216",
+    "Portrait | SDXL Well Known (7:9) - 896x1152": "896x1152",
     "Portrait | Character Sheet (2:3) - 832x1248": "832x1248",
     "Portrait | VN CG (3:4) - 880x1176": "880x1176",
     "Portrait | Manga Cover (4:5) - 912x1144": "912x1144",
     "Mobile | Vertical Story (9:16) - 768x1360": "768x1360",
     "Square | Model Preview (1:1) - 1024x1024": "1024x1024",
+    "Landscape | SDXL Well Known (12:5) - 1536x640": "1536x640",
+    "Landscape | SDXL Well Known (7:4) - 1344x768": "1344x768",
+    "Landscape | SDXL Well Known (19:13) - 1216x832": "1216x832",
+    "Landscape | SDXL Well Known (9:7) - 1152x896": "1152x896",
+    "Landscape | Character Sheet (2:3) - 832x1248": "832x1248",
     "Retro Anime TV (4:3) - 1176x888": "1176x888",
     "Key Visual Poster (1.43:1) - 1224x856": "1224x856",
     "Wide Panel (1.66:1) - 1312x792": "1312x792",
