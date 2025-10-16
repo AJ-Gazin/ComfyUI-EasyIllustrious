@@ -118,8 +118,8 @@ class IllustriousEmptyLatentImage:
         self,
         resolution,
         batch_size,
-        width=1024,
-        height=1024,
+        width=None,
+        height=None,
         model=None,
         model_version="auto",
         optimization_mode="auto",
@@ -129,8 +129,11 @@ class IllustriousEmptyLatentImage:
     ):
         # Parse resolution from dropdown selection or use manual inputs
         if resolution == "manual":
-            # Use provided width and height
-            pass  # width and height are already function parameters
+            # Use provided width and height (fallback to 1024 if not provided)
+            if width is None:
+                width = 1024
+            if height is None:
+                height = 1024
         else:
             # Parse from RESOLUTIONS dictionary
             resolution_str = RESOLUTIONS[resolution]
