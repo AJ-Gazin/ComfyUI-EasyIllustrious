@@ -16,15 +16,17 @@ class IllustriousEmptyLatentImage:
         return {
             "required": {
         "resolution": (
-                    list(RESOLUTIONS.keys()),
+                    ["manual"] + list(RESOLUTIONS.keys()),
                     {
-                        "default": "1:1 - (1024x1024)",
-            "tooltip": "Select resolution/aspect ratio optimized for Illustrious models",
+                        "default": "Square | Model Preview (1:1) - 1024x1024",
+            "tooltip": "Select resolution/aspect ratio optimized for Illustrious models, or 'manual' to specify custom dimensions",
                     },
                 ),
         "batch_size": ("INT", {"default": 1, "min": 1, "max": 64, "tooltip": "How many latents to generate."}),
             },
             "optional": {
+                "width": ("INT", {"default": 1024, "min": 64, "max": 8192, "step": 8, "tooltip": "Manual width (only used when resolution='manual')"}),
+                "height": ("INT", {"default": 1024, "min": 64, "max": 8192, "step": 8, "tooltip": "Manual height (only used when resolution='manual')"}),
                 "model": ("MODEL", {"tooltip": "Optional: provide model to auto-detect EPS/VPred."}),
                 "model_version": (
                     [
@@ -116,6 +118,8 @@ class IllustriousEmptyLatentImage:
         self,
         resolution,
         batch_size,
+        width=1024,
+        height=1024,
         model=None,
         model_version="auto",
         optimization_mode="auto",
@@ -123,9 +127,14 @@ class IllustriousEmptyLatentImage:
         enable_native_resolution=True,
         seed=0,
     ):
-        # Parse resolution from dropdown selection
-        resolution_str = RESOLUTIONS[resolution]
-        width, height = map(int, resolution_str.split("x"))
+        # Parse resolution from dropdown selection or use manual inputs
+        if resolution == "manual":
+            # Use provided width and height
+            pass  # width and height are already function parameters
+        else:
+            # Parse from RESOLUTIONS dictionary
+            resolution_str = RESOLUTIONS[resolution]
+            width, height = map(int, resolution_str.split("x"))
 
         # Determine effective version: prefer explicit, else model introspection, else resolution heuristic
         if model_version != "auto":
