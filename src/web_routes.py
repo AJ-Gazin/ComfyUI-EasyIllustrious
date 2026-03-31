@@ -4,6 +4,7 @@ import json
 from aiohttp import web
 from server import PromptServer
 from .api_handler import IllustriousAPI
+import logging
 
 # Prefer Illustrious symbol; expose as legacy name for old references
 ## Color Corrector server removed; replaced by Color Suite
@@ -131,19 +132,29 @@ async def generate_smart_prompt(request):
         generator = get_smart_generator()
 
         # Generate prompt using the parameters directly
-        prompt, metadata = generator.generate_smart_prompt(**data)
+        prompt, negative_prompt, metadata = generator.generate_smart_prompt(**data)
 
-        return web.json_response(
+        response = web.json_response(
             {
                 "success": True,
                 "prompt": prompt,
+                "negative_prompt": negative_prompt,
                 "metadata": (
                     json.loads(metadata) if isinstance(metadata, str) else metadata
                 ),
             }
         )
+        
+        logging.debug(
+            f" INFO: generate_smart_prompt\n request: {data}\n response: {response.text}"
+        )
+
+        return response 
 
     except Exception as e:
+        logging.error(
+            f" ERROR: request: {request}\n Exception: {e}"
+        )
         return web.json_response(
             {"success": False, "error": f"Generation error: {str(e)}"}, status=500
         )
