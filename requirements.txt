@@ -2,3 +2,4 @@ psutil
 colorama
 tqdm
 inquirer
+opencv-python

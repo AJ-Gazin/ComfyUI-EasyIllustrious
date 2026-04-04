@@ -220,6 +220,12 @@
                         <button class="copy-btn" data-target="prompt-result">📋 Copy</button>
                         <button id="paste-into-focused" class="copy-btn" title="Paste into focused input">⬇ Paste</button>
                     </div>
+                    <div class="result-item">
+                        <label>Negative prompt:</label>
+                        <textarea id="negative-prompt-result" readonly rows="4"></textarea>
+                        <button class="copy-btn" data-target="negative-prompt-result">📋 Copy</button>
+                        <button id="paste-negative-prompt" class="copy-btn" title="Paste into focused input">⬇ Paste</button>
+                    </div>
                 </div>
                 
                 <div class="section stats-section" style="display: none;">
@@ -448,6 +454,8 @@
         });
     const pasteBtn = panel.querySelector('#paste-into-focused');
     if (pasteBtn) pasteBtn.onclick = () => pasteIntoFocused('prompt-result');
+    const pasteNegativeBtn = panel.querySelector('#paste-negative-prompt');
+    if (pasteNegativeBtn) pasteNegativeBtn.onclick = () => pasteIntoFocused('negative-prompt-result');
         
         // Make panel draggable
         makeDraggable(panel, panel.querySelector('.panel-header'));
@@ -581,10 +589,13 @@
     function displayResults(result) {
         const resultsSection = panel.querySelector('.results-section');
         resultsSection.style.display = 'block';
-        
+
         const promptResult = panel.querySelector('#prompt-result');
         promptResult.value = result.prompt || '';
-        
+
+        const negativePromptResult = panel.querySelector('#negative-prompt-result');
+        negativePromptResult.value = result.negative_prompt || '';
+
         // Update stats if panel still exists
         if (panel && document.body.contains(panel)) {
             loadStats();

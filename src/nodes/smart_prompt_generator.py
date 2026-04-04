@@ -337,7 +337,7 @@ class IllustriousSmartSceneGenerator:
     FUNCTION = "generate_smart_prompt"
     CATEGORY = "Easy Illustrious / Generators"
 
-    def generate_smart_prompt(self, **kwargs) -> Tuple[str, str]:
+    def generate_smart_prompt(self, **kwargs) -> Tuple[str, str, str]:
         start_time = time.time()
         try:
             # Use the enhanced scene system's construct method
@@ -933,7 +933,7 @@ class IllustriousSmartSceneGenerator:
                 banned,
                 weight_interpretation,
                 token_normalization,
-        strict_tags,
+                strict_tags,
             )
             cand_s = ", ".join(cand)
             score, breakdown = self._tipo_score(
