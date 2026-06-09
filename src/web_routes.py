@@ -226,4 +226,61 @@ async def smart_prompt_health(request):
         )
 
 
+# User-editable resolution presets (Empty Latent Image dropdown)
+from . import user_resolutions
+
+
+def _resolution_state():
+    store = user_resolutions.load_store()
+    return {
+        "success": True,
+        "options": list(user_resolutions.get_resolution_options().keys()),
+        "custom": store["custom"],
+        "hidden": store["hidden"],
+    }
+
+
+@PromptServer.instance.routes.get("/illustrious/resolutions")
+async def get_resolutions(request):
+    try:
+        return web.json_response(_resolution_state())
+    except Exception as e:
+        return web.json_response({"success": False, "error": str(e)}, status=500)
+
+
+@PromptServer.instance.routes.post("/illustrious/resolutions/add")
+async def add_resolution(request):
+    try:
+        data = await request.json()
+        label = user_resolutions.add_custom_resolution(
+            data.get("width"), data.get("height"), data.get("name")
+        )
+        return web.json_response({**_resolution_state(), "label": label})
+    except ValueError as e:
+        return web.json_response({"success": False, "error": str(e)}, status=400)
+    except Exception as e:
+        return web.json_response({"success": False, "error": str(e)}, status=500)
+
+
+@PromptServer.instance.routes.post("/illustrious/resolutions/delete")
+async def delete_resolution(request):
+    try:
+        data = await request.json()
+        user_resolutions.delete_resolution(data.get("label", ""))
+        return web.json_response(_resolution_state())
+    except ValueError as e:
+        return web.json_response({"success": False, "error": str(e)}, status=400)
+    except Exception as e:
+        return web.json_response({"success": False, "error": str(e)}, status=500)
+
+
+@PromptServer.instance.routes.post("/illustrious/resolutions/reset")
+async def reset_resolutions(request):
+    try:
+        user_resolutions.reset_hidden()
+        return web.json_response(_resolution_state())
+    except Exception as e:
+        return web.json_response({"success": False, "error": str(e)}, status=500)
+
+
 print("[Illustrious] API routes registered (Smart Prompt, Lists, Smart Cache, TIPO)")

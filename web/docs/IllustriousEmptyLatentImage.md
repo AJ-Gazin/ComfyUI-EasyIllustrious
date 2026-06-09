@@ -21,6 +21,16 @@ Creates your blank canvas for the AI to paint on. Pick your size, and you're rea
 
 - **custom_width / custom_height**: Your own dimensions in pixels, used only when resolution is set to **Custom**. With `enable_native_resolution` on, custom sizes snap to the nearest multiple of 64; with it off, to the nearest multiple of 8 (required by the latent grid). Custom sizes are never swapped to a preset.
 
+## Managing Presets
+
+The dropdown is editable — presets are stored in `user/easy_illustrious/custom_resolutions.json`, so they survive pack updates:
+
+- **💾 save custom as preset**: Saves the current custom_width/custom_height as a named dropdown entry (available in all Empty Latent Image nodes).
+- **🗑 remove selected preset**: Removes the selected entry from the dropdown. Custom presets are deleted; built-in presets are only hidden.
+- **Restore hidden resolution presets** (right-click menu): Brings back all hidden built-ins.
+
+Workflows that use a hidden built-in preset keep working; workflows using a deleted custom preset will report a clear validation error.
+
 - **batch_size**: How many images to create at once (1-8)
 - **model**: (Optional) Connect for smart optimization
 - **seed**: Random number for variations

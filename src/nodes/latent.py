@@ -5,7 +5,7 @@ import torch.nn.functional as F
 from typing import Tuple, Optional
 import comfy.model_management
 import comfy.utils
-from .. import RESOLUTIONS
+from ..user_resolutions import get_resolution_options, resolve_resolution
 
 
 class IllustriousEmptyLatentImage:
@@ -13,12 +13,14 @@ class IllustriousEmptyLatentImage:
 
     @classmethod
     def INPUT_TYPES(s):
+        options = list(get_resolution_options().keys())
+        preferred_default = "Square | Model Preview (1:1) - 1024x1024"
         return {
             "required": {
         "resolution": (
-                    list(RESOLUTIONS.keys()) + ["Custom"],
+                    options + ["Custom"],
                     {
-                        "default": "Square | Model Preview (1:1) - 1024x1024",
+                        "default": preferred_default if preferred_default in options else options[0],
             "tooltip": "Select resolution/aspect ratio optimized for Illustrious models, or 'Custom' to use custom_width/custom_height below",
                     },
                 ),
@@ -63,6 +65,14 @@ class IllustriousEmptyLatentImage:
     RETURN_NAMES = ("latent", "resolution_info")
     FUNCTION = "generate_illustrious_latent"
     CATEGORY = "Easy Illustrious / Latent Image"
+
+    @classmethod
+    def VALIDATE_INPUTS(cls, resolution):
+        # Accept hidden built-ins and custom presets so existing workflows keep
+        # working even after a preset is removed from the dropdown.
+        if resolution == "Custom" or resolve_resolution(resolution) is not None:
+            return True
+        return f"Unknown resolution preset '{resolution}'"
 
     def __init__(self):
         # Illustrious optimal resolution tiers and characteristics
@@ -132,7 +142,12 @@ class IllustriousEmptyLatentImage:
         if is_custom:
             width, height = int(custom_width), int(custom_height)
         else:
-            resolution_str = RESOLUTIONS[resolution]
+            resolution_str = resolve_resolution(resolution)
+            if resolution_str is None:
+                raise ValueError(
+                    f"Unknown resolution preset '{resolution}' — it may have been deleted. "
+                    "Pick another preset or use 'Custom'."
+                )
             width, height = map(int, resolution_str.split("x"))
 
         # Determine effective version: prefer explicit, else model introspection, else resolution heuristic
