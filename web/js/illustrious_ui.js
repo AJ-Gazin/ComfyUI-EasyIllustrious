@@ -545,8 +545,9 @@ function addLatentTooltips(widget, nodeType) {
     // Latent node specific tooltips
     const latentTooltips = {
         'IllustriousEmptyLatentImage': {
-            'width': 'Image width in pixels. Use multiples of 64, optimally 128 for high-res.',
-            'height': 'Image height in pixels. Use multiples of 64, optimally 128 for high-res.',
+            'resolution': 'Preset resolution/aspect ratio, or "Custom" to use custom_width/custom_height.',
+            'custom_width': 'Custom image width in pixels. Only used when resolution is "Custom".',
+            'custom_height': 'Custom image height in pixels. Only used when resolution is "Custom".',
             'batch_size': 'Number of images to generate simultaneously.',
             'model_version': 'Illustrious model version. Auto-detects optimal version based on resolution.',
             'optimization_mode': 'Optimization strategy: auto (balanced), quality (best results), speed (faster), compatibility (stable).',

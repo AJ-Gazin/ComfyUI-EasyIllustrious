@@ -16,15 +16,17 @@ class IllustriousEmptyLatentImage:
         return {
             "required": {
         "resolution": (
-                    list(RESOLUTIONS.keys()),
+                    list(RESOLUTIONS.keys()) + ["Custom"],
                     {
-                        "default": "1:1 - (1024x1024)",
-            "tooltip": "Select resolution/aspect ratio optimized for Illustrious models",
+                        "default": "Square | Model Preview (1:1) - 1024x1024",
+            "tooltip": "Select resolution/aspect ratio optimized for Illustrious models, or 'Custom' to use custom_width/custom_height below",
                     },
                 ),
         "batch_size": ("INT", {"default": 1, "min": 1, "max": 64, "tooltip": "How many latents to generate."}),
             },
             "optional": {
+                "custom_width": ("INT", {"default": 1024, "min": 64, "max": 8192, "step": 8, "tooltip": "Width in pixels. Only used when resolution is set to 'Custom'."}),
+                "custom_height": ("INT", {"default": 1024, "min": 64, "max": 8192, "step": 8, "tooltip": "Height in pixels. Only used when resolution is set to 'Custom'."}),
                 "model": ("MODEL", {"tooltip": "Optional: provide model to auto-detect EPS/VPred."}),
                 "model_version": (
                     [
@@ -116,6 +118,8 @@ class IllustriousEmptyLatentImage:
         self,
         resolution,
         batch_size,
+        custom_width=1024,
+        custom_height=1024,
         model=None,
         model_version="auto",
         optimization_mode="auto",
@@ -123,9 +127,13 @@ class IllustriousEmptyLatentImage:
         enable_native_resolution=True,
         seed=0,
     ):
-        # Parse resolution from dropdown selection
-        resolution_str = RESOLUTIONS[resolution]
-        width, height = map(int, resolution_str.split("x"))
+        # Parse resolution from dropdown selection (or use custom dimensions)
+        is_custom = resolution == "Custom"
+        if is_custom:
+            width, height = int(custom_width), int(custom_height)
+        else:
+            resolution_str = RESOLUTIONS[resolution]
+            width, height = map(int, resolution_str.split("x"))
 
         # Determine effective version: prefer explicit, else model introspection, else resolution heuristic
         if model_version != "auto":
@@ -139,7 +147,16 @@ class IllustriousEmptyLatentImage:
         aspect_ratio_mode = self.detect_aspect_ratio_mode(width, height)
 
         # Optimize dimensions for Illustrious if enabled
-        if enable_native_resolution:
+        if is_custom:
+            # Custom resolutions: never swap to a preset native size, only round.
+            # Snap to 64-multiples when native optimization is on, else the
+            # 8-pixel minimum the latent grid requires.
+            multiple = 64 if enable_native_resolution else 8
+            new_width = max(multiple, round(width / multiple) * multiple)
+            new_height = max(multiple, round(height / multiple) * multiple)
+            size_adjusted = (new_width != width) or (new_height != height)
+            width, height = new_width, new_height
+        elif enable_native_resolution:
             width, height, size_adjusted = self.optimize_for_native_resolution(
                 width, height, resolution_tier, inferred_version
             )

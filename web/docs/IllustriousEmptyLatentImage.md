@@ -17,7 +17,10 @@ Creates your blank canvas for the AI to paint on. Pick your size, and you're rea
   - **Landscape (3:2)**: 1216x832 - Scenes, wallpapers
   - **Widescreen (16:9)**: 1344x768 - Cinematic, banners
   - **Tall (9:16)**: 768x1344 - Phone wallpapers, Pinterest
-  
+  - **Custom**: Use your own width/height (see below)
+
+- **custom_width / custom_height**: Your own dimensions in pixels, used only when resolution is set to **Custom**. With `enable_native_resolution` on, custom sizes snap to the nearest multiple of 64; with it off, to the nearest multiple of 8 (required by the latent grid). Custom sizes are never swapped to a preset.
+
 - **batch_size**: How many images to create at once (1-8)
 - **model**: (Optional) Connect for smart optimization
 - **seed**: Random number for variations
